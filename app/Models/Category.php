@@ -14,32 +14,35 @@ class Category extends Model
     protected $fillable = ['name', 'slug'];
 
     //Permite incluir relaciones en la consulta, va ser usados en el foreach para comparar su validez
-    protected array $allowIncludes = ['posts','posts.user'];
+    protected array $allowIncludes = ['posts', 'posts.user'];
 
     //Permite incluir filtros (o condiciones), en la consulta, va ser usados en el for eanch para comprar su validez
-    protected array $allowFilters = ['id','name','slug'];
+    protected array $allowFilters = ['id', 'name', 'slug'];
+
     // 1 a M
-    public function posts():HasMany{
+    public function posts(): HasMany
+    {
         return $this->hasMany(Post::class);
     }
 
 
     //Query escope
     //Se pasa en la url como ??included=posts,posts.user
-    public function scopeIncluded(Builder $query){
+    public function scopeIncluded(Builder $query)
+    {
         //verificamos que exista el conjunto de relaciones y que el parametro includ este definido
-        if(empty($this->allowIncludes) || empty(request('included'))){
+        if (empty($this->allowIncludes) || empty(request('included'))) {
             return;
         }
-        $relations = explode(',',request()->query('included',)); //['posts','relacion2']
-         // en la funcion de query, pasamos por parametro el datos que queremos recuperar, en este caso:
+        $relations = explode(',', request()->query('included')); //['posts','relacion2']
+        // en la funcion de query, pasamos por parametro el datos que queremos recuperar, en este caso:
         // included tiene el valor de 'posts',
         //Conclusion, obtenemos las publicaciones de una categoria
         //http://post.test/api/categorias/1?included=posts
 
-        $allowIncludes=collect($this->allowIncludes);
-        foreach ($relations as $key => $relation){
-            if(!$allowIncludes->contains($relation)){
+        $allowIncludes = collect($this->allowIncludes);
+        foreach ($relations as $key => $relation) {
+            if (!$allowIncludes->contains($relation)) {
                 //eliminamos la relacion que no coincide con  $allowIncludes
                 unset($relations[$key]);
             }
@@ -49,23 +52,25 @@ class Category extends Model
         $query->with($relations);
 
     }
-    public function scopeFilter(Builder $query){
 
-        if(empty($this->allowFilters) || empty(request('filter'))){
+    public function scopeFilter(Builder $query)
+    {
+
+        if (empty($this->allowFilters) || empty(request('filter'))) {
             return;
         }
-        //http://post.test/api/categorias/1?filter[name]=juan&filter[id]=3
-        $filters=request('filter');
+        //http://post.test/api/categorias?filter[name]=mq&filter[id]=3
+        $filters = request('filter');
         //comparamos si los filtros son validos
-        $allowFilters=collect($this->allowFilters);
-        foreach ($filters as $filterIndex => $value){
-            if($allowFilters->contains($filterIndex)){
-               $query->where($filterIndex,'LIKE','%'.$value.'%');
+        $allowFilters = collect($this->allowFilters);
+        foreach ($filters as $filterIndex => $value) {
+            if ($filterIndex == 'id') {
+                $query->where($filterIndex, '=', $value);
+            } else {
+                $query->where($filterIndex, 'LIKE', '%' . $value . '%');
             }
+
         }
-
-
-
 
 
     }

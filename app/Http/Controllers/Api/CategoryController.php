@@ -20,7 +20,13 @@ class CategoryController extends Controller
         //consulta fija
         //$allCategories = Category::all();
         //queryScope
-        $allCategories = Category::include()
+        //FUNCIONAMIENTO Y COMPORTAMIENTO DE INCLUDED
+        // 1) armamos la consulta ( query builder) con el mensaje scopeIncluded.
+        // 2) filtramos los parametros que llegan por request (cliente) y lo convertirmos en una coleccion
+        // por cada iteracion de la coleccion, realizamos lo siguiente:
+        // $query->where($filter, 'LIKE', '%'.$value.'%')
+        // 3) una vez finalizado el filter(), volvemos al controlador para ejecutar la consultar  con ->get();
+        $allCategories = Category::included()
             ->filter()
             ->get();
         return $allCategories;
