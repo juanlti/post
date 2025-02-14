@@ -12,6 +12,6 @@ Route::get('/categorias/{category}',[CategoryController::class,'show'])->name('a
 Route::put('/categorias/{category}',[CategoryController::class,'update'])->name('api.v1.categories.update');
 Route::delete('/categorias/{category}',[CategoryController::class,'destroy'])->name('api.v1.categories.destroy');
 */
-Route::apiResource('categorias',CategoryController::class)->names('api.v1.categories');
+Route::apiResource('categorias',CategoryController::class)->names('api/v1/categories');
 
 
