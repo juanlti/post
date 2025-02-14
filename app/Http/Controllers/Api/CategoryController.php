@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use App\Http\Resources\CategoryResource;
 
 class CategoryController extends Controller
 {
@@ -30,6 +31,8 @@ class CategoryController extends Controller
             ->filter()
             ->sort()
             ->getOrPaginate();
+
+        return CategoryResource::collection($allCategories);
         return $allCategories;
         // return response()->json([$allCategories], 200);
     }
@@ -86,6 +89,10 @@ class CategoryController extends Controller
             //vuelve y ejecuta el ->findOrFail($id);
             $category = Category::included()->findOrFail($id);
 
+            // creo una nueva instancia
+            //return new CategoryResource($category);
+            //utilizo la misma instancia
+            return CategoryResource::make($category);
             return response()->json(['success' => true, 'data' => $category, 'message' => 'categoria encontrada'], 200);
 
 
@@ -121,6 +128,7 @@ class CategoryController extends Controller
             // Actualiza los datos de la categoría
             $category->name = $request->name;
             $category->slug = $request->slug;
+
             $category->save();
 
             return response()->json([
@@ -146,6 +154,7 @@ class CategoryController extends Controller
         try {
 
             $category = Category::findOrFail($id);
+            return CategoryResource::make($category);
             $category->delete();
             return $category;
 

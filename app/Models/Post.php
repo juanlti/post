@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\ApiTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Post extends Model
 {
-    use hasFactory;
+    use hasFactory,ApiTrait;
     //
     const BORRADOR = 1;
     const PUBLICADO = 2;
