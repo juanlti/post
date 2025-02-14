@@ -28,6 +28,7 @@ class CategoryController extends Controller
         // 3) una vez finalizado el filter(), volvemos al controlador para ejecutar la consultar  con ->get();
         $allCategories = Category::included()
             ->filter()
+            ->sort()
             ->get();
         return $allCategories;
         // return response()->json([$allCategories], 200);
