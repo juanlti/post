@@ -21,6 +21,7 @@ class Category extends Model
 
     // Permite incluir campos validos para el ordenamiento
     protected array $allowSorts = ['id', 'name', 'slug'];
+
     // 1 a M
     public function posts(): HasMany
     {
@@ -76,28 +77,39 @@ class Category extends Model
 
 
     }
-    public function scopeSort(Builder $query){
-         if (empty($this->allowSorts) || empty(request('sort'))) {
-             return;
-         }
-         //String to array
-         $sortsFieldsArray=explode(',',request('sort'));
-         // array to collection
-         $allowSorts=collect($this->allowSorts);
-         foreach($sortsFieldsArray as $sortField){
-             $direction='asc';
-             //https://post.test/api/categorias?sort=name,id
-             if(substr($sortField,0,1)=='-'){
-                 $direction='desc';
-                 $sortField=substr($sortField,1);
-                 //dd($sortField);
-             }
-             //hacemos uso del mensaje de colecion (contains) para verificar si existe ese objetos dentro de la coleccion
-             if($allowSorts->contains($sortField)){
-                 $query->orderBy($sortField,$direction);
-             }
-         }
 
+    public function scopeSort(Builder $query)
+    {
+        if (empty($this->allowSorts) || empty(request('sort'))) {
+            return;
+        }
+        //String to array
+        $sortsFieldsArray = explode(',', request('sort'));
+        // array to collection
+        $allowSorts = collect($this->allowSorts);
+        foreach ($sortsFieldsArray as $sortField) {
+            $direction = 'asc';
+            //https://post.test/api/categorias?sort=name,id
+            if (substr($sortField, 0, 1) == '-') {
+                $direction = 'desc';
+                $sortField = substr($sortField, 1);
+                //dd($sortField);
+            }
+            //hacemos uso del mensaje de colecion (contains) para verificar si existe ese objetos dentro de la coleccion
+            if ($allowSorts->contains($sortField)) {
+                $query->orderBy($sortField, $direction);
+            }
+        }
+    }
 
+    public function scopeGetOrPaginate(Builder $query)
+    {
+        if (request('perPage')) {
+            if (is_numeric(request('perPage'))) {
+                $perPage = intval(request('perPage'));
+                return $query->paginate($perPage);
+            }
+        }
+        return $query->get();
     }
 }

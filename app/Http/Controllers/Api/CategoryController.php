@@ -29,7 +29,7 @@ class CategoryController extends Controller
         $allCategories = Category::included()
             ->filter()
             ->sort()
-            ->get();
+            ->getOrPaginate();
         return $allCategories;
         // return response()->json([$allCategories], 200);
     }
